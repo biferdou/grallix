@@ -1,7 +1,8 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
-  PermissionsBitField,
+  PermissionFlagsBits,
+  GuildTextBasedChannel,
 } from "discord.js";
 import { DatabaseService } from "../services/database-service";
 
@@ -15,11 +16,9 @@ export class SetupCommands {
   public async handleSetup(
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
-    // Check if user has proper permissions
+    // Check if user has proper permissions using PermissionFlagsBits
     if (
-      !(interaction.member?.permissions as PermissionsBitField).has(
-        PermissionsBitField.Flags.ManageChannels
-      )
+      !interaction.memberPermissions?.has(PermissionFlagsBits.ManageChannels)
     ) {
       await interaction.reply({
         content:
@@ -56,18 +55,16 @@ export class SetupCommands {
     if (!enableStandups) featuresDisabled.push("Daily Standups");
     if (!enableWeekly) featuresDisabled.push("Weekly Summaries");
 
-    // Instead of directly accessing name
-    const channelName =
-      interaction.channel && "name" in interaction.channel
-        ? interaction.channel.name
-        : "this channel";
+    // Safely get channel name with proper type checking
+    let channelName = "this channel";
+    if (interaction.channel && "name" in interaction.channel) {
+      channelName = interaction.channel.name ?? "this channel";
+    }
 
     const embed = new EmbedBuilder()
       .setColor("#00cc88")
       .setTitle("⚙️ Grallix Configuration")
-      .setDescription(
-        `Configuration updated for channel ${channelName || "Unknown Channel"}`
-      );
+      .setDescription(`Configuration updated for channel ${channelName}`);
 
     if (featuresEnabled.length > 0) {
       embed.addFields({
