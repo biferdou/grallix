@@ -107,7 +107,7 @@ export class CommandHandler {
       },
       {
         name: "setup",
-        description: "Configure SyncHive for this channel",
+        description: "Configure Grallix for this channel",
         options: [
           {
             name: "standups",
