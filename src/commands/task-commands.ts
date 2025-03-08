@@ -52,9 +52,26 @@ export class TaskCommands {
       .setTitle("📋 Active Tasks")
       .setDescription("Here are your active tasks:");
 
-    tasks.forEach((task) => {
+    // Process each task and attempt to get user information
+    for (const task of tasks) {
+      let username = "Unknown User";
+
+      // Try to get from cache first
       const member = interaction.guild?.members.cache.get(task.userId);
-      const username = member ? member.user.username : "Unknown User";
+
+      if (member) {
+        username = member.user.username;
+      } else if (interaction.guild) {
+        // If not in cache, try to fetch the user
+        try {
+          // We'll attempt to fetch the user information
+          const user = await interaction.client.users.fetch(task.userId);
+          username = user.username;
+        } catch (error) {
+          console.error(`Could not fetch user ${task.userId}:`, error);
+          // Keep "Unknown User" as fallback
+        }
+      }
 
       embed.addFields({
         name: `ID: ${task.id}`,
@@ -64,7 +81,7 @@ export class TaskCommands {
           task.dueDate
         ).toLocaleDateString()}`,
       });
-    });
+    }
 
     await interaction.reply({ embeds: [embed] });
   }
