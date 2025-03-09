@@ -23,7 +23,7 @@ export class TaskCommands {
       return;
     }
 
-    const taskId = this.taskService.addTask(
+    const taskId = await this.taskService.addTask(
       interaction.channelId,
       interaction.user.id,
       description,
@@ -37,7 +37,7 @@ export class TaskCommands {
   }
 
   public async handleListTasks(interaction: CommandInteraction): Promise<void> {
-    const tasks = this.taskService.listTasks(interaction.channelId);
+    const tasks = await this.taskService.listTasks(interaction.channelId);
 
     if (tasks.length === 0) {
       await interaction.reply({
@@ -91,7 +91,7 @@ export class TaskCommands {
   ): Promise<void> {
     const options = interaction.options;
     const taskId = options.get("taskid")?.value as string;
-    const result = this.taskService.completeTask(taskId);
+    const result = await this.taskService.completeTask(taskId);
 
     if (result) {
       await interaction.reply({

@@ -19,7 +19,7 @@ export class TimeCommands {
     const options = interaction.options as CommandInteractionOptionResolver;
     const taskId = options.getString("taskid", true);
 
-    const result = this.timeService.startTimer(
+    const result = await this.timeService.startTimer(
       interaction.channelId,
       interaction.user.id,
       taskId
@@ -46,7 +46,7 @@ export class TimeCommands {
   }
 
   public async handleStopTimer(interaction: CommandInteraction): Promise<void> {
-    const result = this.timeService.stopTimer(interaction.user.id);
+    const result = await this.timeService.stopTimer(interaction.user.id);
 
     if (result.success) {
       const hours = Math.floor((result.duration || 0) / 3600000);
@@ -70,7 +70,7 @@ export class TimeCommands {
   public async handleTimeReport(
     interaction: CommandInteraction
   ): Promise<void> {
-    const report = this.timeService.getTimeReport(
+    const report = await this.timeService.getTimeReport(
       interaction.channelId,
       interaction.user.id
     );

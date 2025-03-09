@@ -2,9 +2,8 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
-  GuildTextBasedChannel,
 } from "discord.js";
-import { DatabaseService } from "../services/database-service";
+import { DatabaseService } from "../services/mongodb-service";
 
 export class SetupCommands {
   private db: DatabaseService;
@@ -32,7 +31,7 @@ export class SetupCommands {
     const enableStandups = options.getBoolean("standups", true);
     const enableWeekly = options.getBoolean("weekly", true);
 
-    const settings = this.db.readSettings();
+    const settings = await this.db.readSettings();
 
     if (!settings.channels[interaction.channelId]) {
       settings.channels[interaction.channelId] = {
@@ -45,7 +44,7 @@ export class SetupCommands {
     settings.channels[interaction.channelId].weeklySummaryEnabled =
       enableWeekly;
 
-    this.db.writeSettings(settings);
+    await this.db.writeSettings(settings);
 
     const featuresEnabled: string[] = [];
     if (enableStandups) featuresEnabled.push("Daily Standups");
