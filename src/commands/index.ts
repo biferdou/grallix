@@ -4,7 +4,7 @@ import {
   CommandInteraction,
   CommandInteractionOptionResolver,
 } from "discord.js";
-import { DatabaseService } from "../services/database-service";
+import { DatabaseService } from "../services/mongodb-service";
 import { TaskService } from "../services/task-service";
 import { TimeService } from "../services/time-service";
 import { TaskCommands } from "./task-commands";

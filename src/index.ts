@@ -6,7 +6,7 @@ import {
   CommandInteraction,
 } from "discord.js";
 import { config as dotenvConfig } from "dotenv";
-import { DatabaseService } from "./services/database-service";
+import { DatabaseService } from "./services/mongodb-service";
 import { TaskService } from "./services/task-service";
 import { TimeService } from "./services/time-service";
 import { SchedulerService } from "./services/scheduler-service";
@@ -26,7 +26,7 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-// Initialize services
+// Initialize services (now async)
 const db = new DatabaseService();
 const taskService = new TaskService(db);
 const timeService = new TimeService(db, taskService);
