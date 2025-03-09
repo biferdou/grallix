@@ -1,6 +1,6 @@
 import { Collection } from "discord.js";
 import { ActiveTimer, Task } from "../types";
-import { DatabaseService } from "./database-service";
+import { DatabaseService } from "./mongodb-service";
 import { TaskService } from "./task-service";
 
 interface TimerResult {
@@ -32,12 +32,12 @@ export class TimeService {
     this.activeTimers = new Collection();
   }
 
-  public startTimer(
+  public async startTimer(
     channelId: string,
     userId: string,
     taskId: string
-  ): TimerResult {
-    const task = this.taskService.getTask(taskId);
+  ): Promise<TimerResult> {
+    const task = await this.taskService.getTask(taskId);
 
     if (!task) {
       return { success: false, message: "Task not found" };
@@ -57,7 +57,7 @@ export class TimeService {
     return { success: true, message: "Timer started", task };
   }
 
-  public stopTimer(userId: string): TimerResult {
+  public async stopTimer(userId: string): Promise<TimerResult> {
     const timer = this.activeTimers.get(userId);
 
     if (!timer) {
@@ -67,7 +67,7 @@ export class TimeService {
     const endTime = Date.now();
     const duration = endTime - timer.startTime;
 
-    const timeLogs = this.db.readTimeLogs();
+    const timeLogs = await this.db.readTimeLogs();
     timeLogs.logs.push({
       userId,
       taskId: timer.taskId,
@@ -77,7 +77,7 @@ export class TimeService {
       duration,
     });
 
-    this.db.writeTimeLogs(timeLogs);
+    await this.db.writeTimeLogs(timeLogs);
     this.activeTimers.delete(userId);
 
     return {
@@ -88,8 +88,11 @@ export class TimeService {
     };
   }
 
-  public getTimeReport(channelId: string, userId: string): TimeReport {
-    const timeLogs = this.db.readTimeLogs();
+  public async getTimeReport(
+    channelId: string,
+    userId: string
+  ): Promise<TimeReport> {
+    const timeLogs = await this.db.readTimeLogs();
 
     // Get logs for this user
     const userLogs = timeLogs.logs.filter(
@@ -102,16 +105,16 @@ export class TimeService {
       { description: string; totalTime: number }
     > = {};
 
-    userLogs.forEach((log) => {
+    for (const log of userLogs) {
       if (!taskTimes[log.taskId]) {
-        const task = this.taskService.getTask(log.taskId);
+        const task = await this.taskService.getTask(log.taskId);
         taskTimes[log.taskId] = {
           description: task ? task.description : "Unknown Task",
           totalTime: 0,
         };
       }
       taskTimes[log.taskId].totalTime += log.duration;
-    });
+    }
 
     // Calculate total time
     const totalTime = Object.values(taskTimes).reduce(

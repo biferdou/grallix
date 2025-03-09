@@ -1,5 +1,5 @@
 import { Task } from "../types";
-import { DatabaseService } from "./database-service";
+import { DatabaseService } from "./mongodb-service";
 
 export class TaskService {
   private db: DatabaseService;
@@ -8,14 +8,15 @@ export class TaskService {
     this.db = db;
   }
 
-  public addTask(
+  public async addTask(
     channelId: string,
     userId: string,
     description: string,
     dueDate: string
-  ): string {
-    const tasks = this.db.readTasks();
+  ): Promise<string> {
     const taskId = Date.now().toString();
+
+    const tasks = await this.db.readTasks();
 
     tasks.tasks.push({
       id: taskId,
@@ -28,12 +29,12 @@ export class TaskService {
       completedAt: null,
     });
 
-    this.db.writeTasks(tasks);
+    await this.db.writeTasks(tasks);
     return taskId;
   }
 
-  public listTasks(channelId: string, userId?: string): Task[] {
-    const tasks = this.db.readTasks();
+  public async listTasks(channelId: string, userId?: string): Promise<Task[]> {
+    const tasks = await this.db.readTasks();
     return tasks.tasks.filter(
       (task) =>
         task.channelId === channelId &&
@@ -42,8 +43,8 @@ export class TaskService {
     );
   }
 
-  public completeTask(taskId: string): boolean {
-    const tasks = this.db.readTasks();
+  public async completeTask(taskId: string): Promise<boolean> {
+    const tasks = await this.db.readTasks();
     const taskIndex = tasks.tasks.findIndex((t) => t.id === taskId);
 
     if (taskIndex === -1) {
@@ -52,12 +53,12 @@ export class TaskService {
 
     tasks.tasks[taskIndex].completed = true;
     tasks.tasks[taskIndex].completedAt = new Date().toISOString();
-    this.db.writeTasks(tasks);
+    await this.db.writeTasks(tasks);
     return true;
   }
 
-  public getTask(taskId: string): Task | null {
-    const tasks = this.db.readTasks();
+  public async getTask(taskId: string): Promise<Task | null> {
+    const tasks = await this.db.readTasks();
     return tasks.tasks.find((t) => t.id === taskId) || null;
   }
 }
