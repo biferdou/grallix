@@ -57,12 +57,9 @@ export class DatabaseService {
 
   private async connect(): Promise<void> {
     try {
+      // Removed deprecated options
       await mongoose.connect(
-        process.env.MONGODB_URI || "mongodb://localhost:27017/grallixbot",
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        } as ConnectOptions
+        process.env.MONGODB_URI || "mongodb://localhost:27017/grallixbot"
       );
       console.log("Connected to MongoDB");
     } catch (error) {
