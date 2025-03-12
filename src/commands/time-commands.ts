@@ -2,6 +2,7 @@ import {
   CommandInteraction,
   CommandInteractionOptionResolver,
   EmbedBuilder,
+  MessageFlags,
 } from "discord.js";
 import { TimeService } from "../services/time-service";
 import { Task } from "../types";
@@ -35,12 +36,12 @@ export class TimeCommands {
         content: `⏱️ Timer started for task: ${
           taskDescription || "Unknown Task"
         }`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } else {
       await interaction.reply({
         content: `❌ ${result.message}`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }
@@ -57,12 +58,12 @@ export class TimeCommands {
 
       await interaction.reply({
         content: `⏱️ Timer stopped for task: ${result.task}\nTime logged: ${timeString}`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } else {
       await interaction.reply({
         content: `❌ ${result.message}`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }

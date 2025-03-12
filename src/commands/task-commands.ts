@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import { CommandInteraction, EmbedBuilder, MessageFlags } from "discord.js";
 import { TaskService } from "../services/task-service";
 
 export class TaskCommands {
@@ -18,7 +18,7 @@ export class TaskCommands {
     if (isNaN(dueDate.getTime())) {
       await interaction.reply({
         content: "Invalid date format. Please use YYYY-MM-DD.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -32,7 +32,7 @@ export class TaskCommands {
 
     await interaction.reply({
       content: `✅ Task created! ID: ${taskId}`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 
@@ -42,7 +42,7 @@ export class TaskCommands {
     if (tasks.length === 0) {
       await interaction.reply({
         content: "No active tasks found.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -96,12 +96,12 @@ export class TaskCommands {
     if (result) {
       await interaction.reply({
         content: "✅ Task marked as completed!",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } else {
       await interaction.reply({
         content: "❌ Task not found. Check the task ID and try again.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }

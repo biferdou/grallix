@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
+  MessageFlags,
 } from "discord.js";
 import { DatabaseService } from "../services/mongodb-service";
 
@@ -22,7 +23,7 @@ export class SetupCommands {
       await interaction.reply({
         content:
           '❌ You need the "Manage Channels" permission to configure Grallix.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
